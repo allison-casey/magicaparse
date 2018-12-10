@@ -1,6 +1,6 @@
 import * as R from "ramda";
 import {readUByte} from "../byteReaders";
-import {readArrayProp, log} from "../utils";
+import {readArrayProp} from "../utils";
 
 export const parseRGBA = payload =>
   R.pipe(

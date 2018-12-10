@@ -1,4 +1,5 @@
 import * as R from "ramda";
+import {readArrayProp} from "./utils";
 
 export const readString = R.curry((key, {chunk = {}, buffer}) => ({
   chunk: {...chunk, [key]: buffer.slice(0, 4).toString("ascii")},
@@ -20,10 +21,10 @@ export const readUByte = R.curry((key, {chunk = {}, buffer}) => ({
   buffer: buffer.slice(1)
 }));
 
-export const readDict = R.curry((key, {chunk = {}, buffer}) => {
-  const out = R.pipe(readInt("numPairs"))({buffer});
-  return {chunk: {[key]: out.chunk, ...chunk}, buffer: out.buffer};
-});
+// export const readDict = R.curry((key, {chunk = {}, buffer}) => {
+//   const out = R.pipe(readInt("numPairs"))({buffer});
+//   return {chunk: {[key]: out.chunk, ...chunk}, buffer: out.buffer};
+// });
 
 export const readVariableString = R.curry((key, {chunk = {}, buffer}) => {
   const payload = readInt("bufferSize", {chunk, buffer});
@@ -38,3 +39,23 @@ export const readVariableString = R.curry((key, {chunk = {}, buffer}) => {
     buffer: payload.buffer.slice(bufferSize)
   };
 });
+
+export const readDict = R.curry((key, {chunk = {}, buffer}) =>
+  R.pipe(
+    readInt("numPairs"),
+    payload =>
+      R.pipe(
+        R.path(["chunk", "numPairs"]),
+        readArrayProp(
+          key,
+          R.pipe(
+            readVariableString("key"),
+            readVariableString("value")
+          ),
+          R.__,
+          payload
+        ),
+        R.mergeDeepRight({chunk})
+      )(payload)
+  )({buffer})
+);

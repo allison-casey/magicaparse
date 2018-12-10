@@ -10,7 +10,7 @@ const parseFileHeader = buffer =>
     readInt("version")
   )({buffer});
 
-fs.readFile("./src/test/vox/3x3x3rot.vox").then(buffer => {
+fs.readFile("./src/test/vox/3x3x3.vox").then(buffer => {
   let out = R.pipe(
     parseFileHeader,
     parseChunk,

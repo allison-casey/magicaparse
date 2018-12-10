@@ -19,3 +19,8 @@ export const readUByte = R.curry((key, {chunk = {}, buffer}) => ({
   chunk: {...chunk, [key]: buffer.slice(0, 1).readUInt8()},
   buffer: buffer.slice(1)
 }));
+
+export const readDict = R.curry((key, {chunk = {}, buffer}) => {
+  const out = R.pipe(readInt("numPairs"))({buffer});
+  return {chunk: {[key]: out.chunk, ...chunk}, buffer: out.buffer};
+});

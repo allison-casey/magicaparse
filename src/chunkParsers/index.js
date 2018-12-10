@@ -3,6 +3,8 @@ import {readString, readInt} from "../byteReaders";
 import {parseSize} from "./size";
 import {parseXYZI} from "./xyzi";
 import {parseRGBA} from "./rgba";
+import {parsenTRN} from "./ntrn";
+import {parsenGRP} from "./ngrp";
 
 // export {parseSize} from "./size";
 // export {parseXYZI} from "./xyzi";
@@ -27,11 +29,14 @@ const parseChunk = ({chunk, buffer}) => {
     case "XYZI":
       body = parseXYZI(header);
       break;
-    // case "nTRN":
-    //   body = parsenTRN(header);
-    //   break;
+    case "nTRN":
+      body = parsenTRN(header);
+      break;
     case "RGBA":
       body = parseRGBA(header);
+      break;
+    case "nGRP":
+      body = parsenGRP(header);
       break;
     default:
       body = {chunk: {}, buffer: header.buffer};

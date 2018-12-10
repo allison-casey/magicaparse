@@ -5,6 +5,7 @@ import {parseXYZI} from "./xyzi";
 import {parseRGBA} from "./rgba";
 import {parsenTRN} from "./ntrn";
 import {parsenGRP} from "./ngrp";
+import {parsenSHP} from "./nshp";
 
 const chunkHeader = ({buffer}) =>
   R.pipe(
@@ -12,6 +13,14 @@ const chunkHeader = ({buffer}) =>
     readInt("chunkContent"),
     readInt("childChunks")
   )({buffer});
+
+const updateArrayChunk = (id, body, chunk, header) => ({
+  chunk: {
+    ...chunk,
+    [id]: [...(chunk[id] || []), {...header.chunk, ...body.chunk}]
+  },
+  buffer: body.buffer
+});
 
 const parseChunk = ({chunk, buffer}) => {
   const header = chunkHeader({buffer});
@@ -27,21 +36,20 @@ const parseChunk = ({chunk, buffer}) => {
     case "XYZI":
       body = parseXYZI(header);
       break;
-    case "nTRN":
-      body = parsenTRN(header);
-      return {
-        chunk: {
-          ...chunk,
-          [id]: [...(chunk[id] || []), {...header.chunk, ...body.chunk}]
-        },
-        buffer: body.buffer
-      };
-      break;
     case "RGBA":
       body = parseRGBA(header);
       break;
+    case "nTRN":
+      body = parsenTRN(header);
+      return updateArrayChunk(id, body, chunk, header);
+      break;
     case "nGRP":
       body = parsenGRP(header);
+      return updateArrayChunk(id, body, chunk, header);
+      break;
+    case "nSHP":
+      body = parsenSHP(header);
+      return updateArrayChunk(id, body, chunk, header);
       break;
     default:
       body = {chunk: {}, buffer: header.buffer};

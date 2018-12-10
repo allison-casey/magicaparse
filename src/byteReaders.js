@@ -24,3 +24,17 @@ export const readDict = R.curry((key, {chunk = {}, buffer}) => {
   const out = R.pipe(readInt("numPairs"))({buffer});
   return {chunk: {[key]: out.chunk, ...chunk}, buffer: out.buffer};
 });
+
+export const readVariableString = R.curry((key, {chunk = {}, buffer}) => {
+  const payload = readInt("bufferSize", {chunk, buffer});
+  const bufferSize = R.path(["chunk", "bufferSize"], payload);
+  // console.log(payload);
+
+  return {
+    chunk: {
+      ...chunk,
+      [key]: payload.buffer.slice(0, bufferSize).toString("ascii")
+    },
+    buffer: payload.buffer.slice(bufferSize)
+  };
+});

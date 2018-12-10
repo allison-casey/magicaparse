@@ -1,9 +1,25 @@
 import * as R from "ramda";
-import {readInt} from "../byteReaders";
-import {log} from "../utils";
+import {readInt, readVariableString} from "../byteReaders";
+import {log, readArrayProp} from "../utils";
 
 const readDict = R.curry((key, {chunk = {}, buffer}) => {
-  const out = R.pipe(readInt("numPairs"))({buffer});
+  const out = R.pipe(
+    readInt("numPairs"),
+    payload =>
+      R.pipe(
+        R.path(["chunk", "numPairs"]),
+        readArrayProp(
+          "pairs",
+          R.pipe(
+            readVariableString("key"),
+            readVariableString("value")
+          ),
+          R.__,
+          payload
+        )
+      )(payload)
+  )({buffer});
+
   return {chunk: {[key]: out.chunk, ...chunk}, buffer: out.buffer};
 });
 

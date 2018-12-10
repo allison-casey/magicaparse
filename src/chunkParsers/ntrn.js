@@ -17,6 +17,5 @@ export const parsenTRN = ({chunk, buffer}) => {
     readInt("numFrames"),
     readDict("frameAttribute")
   )({buffer});
-  console.log(out);
   return out;
 };

@@ -22,6 +22,8 @@ const parseChunk = ({chunk, buffer}) => {
   const id = R.path(["chunk", "id"], header);
   let body = {chunk: {}, buffer: header.buffer};
 
+  // console.log(header);
+
   switch (id) {
     case "SIZE":
       body = parseSize(header);
@@ -31,6 +33,13 @@ const parseChunk = ({chunk, buffer}) => {
       break;
     case "nTRN":
       body = parsenTRN(header);
+      return {
+        chunk: {
+          ...chunk,
+          [id]: [...(chunk[id] || []), {...header.chunk, ...body.chunk}]
+        },
+        buffer: body.buffer
+      };
       break;
     case "RGBA":
       body = parseRGBA(header);

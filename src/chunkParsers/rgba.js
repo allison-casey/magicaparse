@@ -1,19 +1,18 @@
 import * as R from "ramda";
 import {readUByte} from "../byteReaders";
-import {readArrayProp} from "../utils";
+import {readArrayProp, log} from "../utils";
 
-export const parseRGBA = ({chunk, buffer}) => {
-  const out = readArrayProp(
-    "colors",
-    R.pipe(
-      readUByte("r"),
-      readUByte("g"),
-      readUByte("b"),
-      readUByte("a")
+export const parseRGBA = payload =>
+  R.pipe(
+    readArrayProp(
+      "colors",
+      R.pipe(
+        readUByte("r"),
+        readUByte("g"),
+        readUByte("b"),
+        readUByte("a")
+      ),
+      256
     ),
-    256,
-    {chunk, buffer}
-  );
-
-  return {chunk: {...chunk, ...out.chunk}, buffer: out.buffer};
-};
+    R.mergeDeepRight({chunk: payload.chunk})
+  )(payload);

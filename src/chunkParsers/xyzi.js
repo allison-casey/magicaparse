@@ -1,6 +1,6 @@
 import * as R from "ramda";
 import {readByte, readInt} from "../byteReaders";
-import {applyN} from "../utils";
+import {applyN, readArrayProp, log} from "../utils";
 
 const readXYZIComponents = ({chunk = {}, buffer}) =>
   R.pipe(
@@ -10,25 +10,12 @@ const readXYZIComponents = ({chunk = {}, buffer}) =>
     readByte("i")
   )({buffer});
 
-export const parseXYZI = ({chunk, buffer}) => {
-  return R.pipe(
+export const parseXYZI = ({chunk, buffer}) =>
+  R.pipe(
     readInt("numVoxels"),
-    payload => {
-      const numVoxels = R.path(["chunk", "numVoxels"], payload);
-      const body = applyN(payload => {
-        const component = readXYZIComponents(payload);
-        return {
-          chunk: {
-            ...payload.chunk,
-            voxels: [...payload.chunk.voxels, component.chunk]
-          },
-          buffer: component.buffer
-        };
-      }, numVoxels)({
-        chunk: {voxels: [], ...payload.chunk},
-        buffer: payload.buffer
-      });
-      return body;
-    }
+    payload =>
+      R.pipe(
+        R.path(["chunk", "numVoxels"]),
+        readArrayProp("voxels", readXYZIComponents, R.__, payload)
+      )(payload)
   )({buffer});
-};

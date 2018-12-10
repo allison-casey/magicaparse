@@ -1,6 +1,6 @@
 import * as R from "ramda";
 import {readByte, readInt} from "../byteReaders";
-import {applyN, readArrayProp, log} from "../utils";
+import {readArrayProp} from "../utils";
 
 const readXYZIComponents = ({chunk = {}, buffer}) =>
   R.pipe(

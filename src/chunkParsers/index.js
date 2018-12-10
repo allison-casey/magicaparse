@@ -6,10 +6,6 @@ import {parseRGBA} from "./rgba";
 import {parsenTRN} from "./ntrn";
 import {parsenGRP} from "./ngrp";
 
-// export {parseSize} from "./size";
-// export {parseXYZI} from "./xyzi";
-// export {parseRGBA} from "./rgba";
-
 const chunkHeader = ({buffer}) =>
   R.pipe(
     readString("id"),

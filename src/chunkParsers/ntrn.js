@@ -1,9 +1,8 @@
 import * as R from "ramda";
 import {readInt, readDict} from "../byteReaders";
-import {log, readArrayProp} from "../utils";
 
-export const parsenTRN = ({chunk, buffer}) => {
-  const out = R.pipe(
+export const parsenTRN = ({chunk, buffer}) =>
+  R.pipe(
     readInt("id"),
     readDict("attributes"),
     readInt("childNodeID"),
@@ -12,5 +11,3 @@ export const parsenTRN = ({chunk, buffer}) => {
     readInt("numFrames"),
     readDict("frameAttribute")
   )({buffer});
-  return out;
-};

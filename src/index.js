@@ -1,7 +1,6 @@
 import * as R from "ramda";
 import fs from "fs-extra";
-import {readString, readInt, readByte, readUByte} from "./byteReaders";
-import {applyN, log} from "./utils";
+import {readString, readInt} from "./byteReaders";
 import parseChunk from "./chunkParsers";
 
 const parseFileHeader = buffer =>
@@ -13,6 +12,7 @@ const parseFileHeader = buffer =>
 fs.readFile("./src/test/vox/3x3x3.vox").then(buffer => {
   let out = R.pipe(
     parseFileHeader,
+    parseChunk,
     parseChunk,
     parseChunk,
     parseChunk,

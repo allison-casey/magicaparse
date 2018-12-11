@@ -8,6 +8,7 @@ import {parsenGRP} from "./ngrp";
 import {parsenSHP} from "./nshp";
 import {parseLAYR} from "./layr";
 import {parseMATL} from "./matl";
+import {parserOBJ} from "./robj";
 
 const chunkHeader = ({buffer}) =>
   R.pipe(
@@ -29,7 +30,7 @@ const parseChunk = ({chunk, buffer}) => {
   const id = R.path(["chunk", "id"], header);
   let body = {chunk: {}, buffer: header.buffer};
 
-  // console.log(header);
+  console.log(header);
 
   switch (id) {
     case "SIZE":
@@ -60,6 +61,10 @@ const parseChunk = ({chunk, buffer}) => {
     case "MATL":
       body = parseMATL(header);
       return updateArrayChunk(id, body, chunk, header);
+    case "rOBJ":
+      body = parserOBJ(header);
+      return updateArrayChunk(id, body, chunk, header);
+      break;
     default:
       body = {chunk: {}, buffer: header.buffer};
   }

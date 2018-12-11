@@ -6,6 +6,8 @@ import {parseRGBA} from "./rgba";
 import {parsenTRN} from "./ntrn";
 import {parsenGRP} from "./ngrp";
 import {parsenSHP} from "./nshp";
+import {parseLAYR} from "./layr";
+import {parseMATL} from "./matl";
 
 const chunkHeader = ({buffer}) =>
   R.pipe(
@@ -51,6 +53,13 @@ const parseChunk = ({chunk, buffer}) => {
       body = parsenSHP(header);
       return updateArrayChunk(id, body, chunk, header);
       break;
+    case "LAYR":
+      body = parseLAYR(header);
+      return updateArrayChunk(id, body, chunk, header);
+      break;
+    case "MATL":
+      body = parseMATL(header);
+      return updateArrayChunk(id, body, chunk, header);
     default:
       body = {chunk: {}, buffer: header.buffer};
   }

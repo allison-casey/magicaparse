@@ -18,6 +18,17 @@ fs.readFile("./src/test/vox/3x3x3.vox").then(buffer => {
     parseChunk,
     parseChunk,
     parseChunk,
+    parseChunk,
+    parseChunk,
+    parseChunk,
+    parseChunk,
+    parseChunk,
+    parseChunk,
+    parseChunk,
+    parseChunk,
+    parseChunk,
+    parseChunk,
+    parseChunk,
     parseChunk
   )(buffer);
   console.log(JSON.stringify(out.chunk, null, 4));

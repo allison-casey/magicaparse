@@ -30,8 +30,6 @@ const parseChunk = ({chunk, buffer}) => {
   const id = R.path(["chunk", "id"], header);
   let body = {chunk: {}, buffer: header.buffer};
 
-  console.log(header);
-
   switch (id) {
     case "SIZE":
       body = parseSize(header);

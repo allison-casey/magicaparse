@@ -9,9 +9,10 @@ const parseFileHeader = buffer =>
     readInt("version")
   )({buffer});
 
-fs.readFile("./src/test/vox/3x3x3.vox").then(buffer => {
+fs.readFile("./src/test/vox/castle.vox").then(buffer => {
   let out = R.until(payload => !payload.buffer.length, parseChunk)(
     parseFileHeader(buffer)
   );
-  console.log(JSON.stringify(out, null, 4));
+  console.log(JSON.stringify(out.chunk, null, 4));
+  console.log(out.buffer.length);
 });

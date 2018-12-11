@@ -17,11 +17,16 @@ const chunkHeader = ({buffer}) =>
     readInt("childChunks")
   )({buffer});
 
-const updateArrayChunk = (id, body, chunk, header) => ({
+const updateArrayChunk = R.curry((id, body, chunk, header) => ({
   chunk: {
     ...chunk,
     [id]: [...(chunk[id] || []), {...header.chunk, ...body.chunk}]
   },
+  buffer: body.buffer
+}));
+
+const updateChunk = (id, body, chunk, header) => ({
+  chunk: {...chunk, [id]: {...header.chunk, ...body.chunk}},
   buffer: body.buffer
 });
 
@@ -31,14 +36,25 @@ const parseChunk = ({chunk, buffer}) => {
   let body = {chunk: {}, buffer: header.buffer};
 
   switch (id) {
+    case "MAIN":
+      return updateChunk(
+        "MAIN",
+        {chunk: {}, buffer: header.buffer},
+        chunk,
+        header
+      );
+      break;
     case "SIZE":
       body = parseSize(header);
+      return updateChunk(id, body, chunk, header);
       break;
     case "XYZI":
       body = parseXYZI(header);
+      return updateChunk(id, body, chunk, header);
       break;
     case "RGBA":
       body = parseRGBA(header);
+      return updateChunk(id, body, chunk, header);
       break;
     case "nTRN":
       body = parsenTRN(header);
@@ -63,13 +79,7 @@ const parseChunk = ({chunk, buffer}) => {
       body = parserOBJ(header);
       return updateArrayChunk(id, body, chunk, header);
       break;
-    default:
-      body = {chunk: {}, buffer: header.buffer};
   }
-  return {
-    chunk: {...chunk, [id]: {...header.chunk, ...body.chunk}},
-    buffer: body.buffer
-  };
 };
 
 export default parseChunk;

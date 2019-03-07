@@ -25,15 +25,49 @@ const updateArrayChunk = R.curry((id, body, chunk, header) => ({
   buffer: body.buffer
 }));
 
-const updateChunk = (id, body, chunk, header) => ({
+const updateChunk = R.curry((id, body, chunk, header) => ({
   chunk: {...chunk, [id]: {...header.chunk, ...body.chunk}},
   buffer: body.buffer
-});
+}));
+
+const grabID = R.path(["chunk", "id"]);
+const idEquals = key =>
+  R.pipe(
+    grabID,
+    R.equals(key)
+  );
+
+const updateChunkCreator = R.curry((chunk, callback, payload) =>
+  updateChunk(grabID(payload), callback(payload), chunk, payload)
+);
+
+const updateArrayChunkCreator = R.curry((chunk, callback, payload) =>
+  updateArrayChunk(grabID(payload), callback(payload), chunk, payload)
+);
+
+// const createSwitch = (chunk, header) =>
+//   R.cond([
+//     [
+//       idEquals("MAIN"),
+//       updateChunk("MAIN", {chunk: {}, buffer: header.buffer}, chunk)
+//     ],
+//     [idEquals("SIZE"), updateChunkCreator(chunk, parseSize)],
+//     [idEquals("XYZI"), updateChunkCreator(chunk, parseXYZI)],
+//     [idEquals("RGBA"), updateChunkCreator(chunk, parseRGBA)],
+//     [idEquals("nTRN"), updateArrayChunkCreator(chunk, parsenTRN)],
+//     [idEquals("nGRP"), updateArrayChunkCreator(chunk, parsenGRP)],
+//     [idEquals("nSHP"), updateArrayChunkCreator(chunk, parsenSHP)],
+//     [idEquals("LAYR"), updateArrayChunkCreator(chunk, parseLAYR)],
+//     [idEquals("MATL"), updateArrayChunkCreator(chunk, parseMATL)],
+//     [idEquals("rOBJ"), updateArrayChunkCreator(chunk, parserOBJ)]
+//   ]);
 
 const parseChunk = ({chunk, buffer}) => {
   const header = chunkHeader({buffer});
   const id = R.path(["chunk", "id"], header);
   let body = {chunk: {}, buffer: header.buffer};
+
+  // console.log(createSwitch(chunk, header)(header));
 
   switch (id) {
     case "MAIN":
